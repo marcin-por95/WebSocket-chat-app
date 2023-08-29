@@ -1,12 +1,11 @@
-let userName = null;
-
-const loginForm = document.getElementById('welcome-form');
+const welcomeForm = document.getElementById('welcome-form');
 const messagesSection = document.getElementById('messages-section');
 const messagesList = document.getElementById('messages-list');
 const addMessageForm = document.getElementById('add-messages-form');
 
 const userNameInput = document.getElementById('username');
 const messageContentInput = document.getElementById('message-content');
+let userName = null;
 
 function login(event) {
     event.preventDefault();
@@ -18,11 +17,11 @@ function login(event) {
 
     userName = userNameInput.value;
 
-    loginForm.classList.remove('show');
+    welcomeForm.classList.remove('show');
     messagesSection.classList.add('show');
 }
 
-loginForm.addEventListener('submit', login);
+welcomeForm.addEventListener('submit', login);
 
 function sendMessage(event) {
     event.preventDefault();
@@ -45,11 +44,6 @@ function sendMessage(event) {
 addMessageForm.addEventListener('submit', sendMessage);
 
 function addMessage(author, content) {
-    if (!userName) {
-        alert('Please log in first.');
-        return;
-    }
-
     const message = document.createElement('li');
     message.classList.add('message', 'message--received');
 
