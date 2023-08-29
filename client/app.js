@@ -1,62 +1,81 @@
-const welcomeForm = document.getElementById('welcome-form');
-const messagesSection = document.getElementById('messages-section');
-const messagesList = document.getElementById('messages-list');
-const addMessageForm = document.getElementById('add-messages-form');
+const socket = io();
 
-const userNameInput = document.getElementById('username');
-const messageContentInput = document.getElementById('message-content');
-let userName = null;
+
+let userName = "";
+
+
+const loginForm = document.getElementById("welcome-form");
+const messagesSection = document.getElementById("messages-section");
+const messagesList = document.getElementById("messages-list");
+const addMessageForm = document.getElementById("add-messages-form");
+const userNameInput = document.getElementById("username");
+const messageContentInput = document.getElementById("message-content");
+
+socket.on('message', ({ author, content }) => addMessage(author, content))
+
+loginForm.addEventListener("submit", function (event) {
+    login(event);
+});
+
+
+addMessageForm.addEventListener("submit", function (event) {
+    sendMessage(event);
+});
+
 
 function login(event) {
     event.preventDefault();
 
-    if (userNameInput.value.trim() === '') {
-        alert('Please enter your username.');
+
+    const enteredUserName = userNameInput.value;
+
+
+    if (!enteredUserName) {
+        alert("Please enter a username.");
         return;
     }
 
-    userName = userNameInput.value;
 
-    welcomeForm.classList.remove('show');
-    messagesSection.classList.add('show');
+    userName = enteredUserName;
+
+
+    loginForm.classList.remove("show");
+    messagesSection.classList.add("show");
 }
 
-welcomeForm.addEventListener('submit', login);
 
-function sendMessage(event) {
-    event.preventDefault();
+function sendMessage(e) {
+    e.preventDefault();
 
-    if (!userName) {
-        alert('Please log in first.');
-        return;
+    let messageContent = messageContentInput.value;
+
+
+    if (!messageContent.length) {
+        alert('You have to type something!');
     }
-
-    if (messageContentInput.value.trim() === '') {
-        alert('Please enter a message.');
-        return;
+    else {
+        addMessage(userName, messageContent);
+        socket.emit('message', { author: userName, content:messageContent })
+        messageContentInput.value = '';
     }
-
-    addMessage(userName, messageContentInput.value);
-
-    messageContentInput.value = '';
 }
 
-addMessageForm.addEventListener('submit', sendMessage);
 
 function addMessage(author, content) {
-    const message = document.createElement('li');
-    message.classList.add('message', 'message--received');
+    const message = document.createElement("li");
+    message.classList.add("message");
+    message.classList.add("message--received");
 
     if (author === userName) {
-        message.classList.add('message--self');
+        message.classList.add("message--self");
     }
 
     message.innerHTML = `
-        <h3 class="message__author">${userName === author ? 'You' : author }</h3>
-        <div class="message__content">
-            ${content}
-        </div>
-    `;
+    <h3 class="message__author">${userName === author ? "You" : author}</h3>
+    <div class="message__content">
+      ${content}
+    </div>
+  `;
 
     messagesList.appendChild(message);
 }
